@@ -81,7 +81,7 @@ def evaluate_linear(num_users = 100, raw_id_maps="./data/ml-1m/saved/raw_id_maps
 
 # annoy
 def evaluate_annoy(num_users = 100, user_col='user_id', item_col='movie_id',
-                     raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=10):
+                     raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=[10]):
     start_time = time.time()  # Start timing
     annoy = Annoy(n_trees=10)
     annoy.fit(item_embedding)
@@ -150,32 +150,33 @@ def evaluate_milvus(num_users, raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy",
 
 
 if __name__ == '__main__':
-    batch_sizes = [100, 500, 1000]
+    batch_sizes = [100, 500, 1000, 2000, 3000, 4000, 5000, 6000]
     plt.figure(figsize=(10, 5))  # Optional: Define a larger figure size
 
     # Run the tests for linear scan
-    average_times_linear = []
-    for batch_size in batch_sizes:
-        elapsed_times = []
-        for _ in range(5):  # Repeat the test 5 times for each batch size
-            elapsed_time = evaluate_linear(num_users=batch_size)
-            elapsed_times.append(elapsed_time)
-        print("---")
-        average_elapsed_time = sum(elapsed_times) / len(elapsed_times)
-        average_times_linear.append(average_elapsed_time)
-    plt.plot(batch_sizes, average_times_linear, marker='o', label='Linear Scan')
-
-    # Run the tests for Annoy
-    average_times_annoy = []
-    for batch_size in batch_sizes:
-        elapsed_times = []
-        for _ in range(5):  # Repeat the test 5 times for each batch size
-            elapsed_time = evaluate_annoy(num_users=batch_size)
-            elapsed_times.append(elapsed_time)
-        print("---")
-        average_elapsed_time = sum(elapsed_times) / len(elapsed_times)
-        average_times_annoy.append(average_elapsed_time)
-    plt.plot(batch_sizes, average_times_annoy, marker='s', label='Annoy')
+    # average_times_linear = []
+    # for batch_size in batch_sizes:
+    #     elapsed_times = []
+    #     for _ in range(5):  # Repeat the test 5 times for each batch size
+    #         elapsed_time = evaluate_linear(num_users=batch_size)
+    #         elapsed_times.append(elapsed_time)
+    #
+    #     average_elapsed_time = sum(elapsed_times) / len(elapsed_times)
+    #     print("---" + "Batch size: " + str(batch_size) + "---" + str(average_elapsed_time))
+    #     average_times_linear.append(average_elapsed_time)
+    # plt.plot(batch_sizes, average_times_linear, marker='o', label='Linear Scan')
+    # print("******************8")
+    # # Run the tests for Annoy
+    # average_times_annoy = []
+    # for batch_size in batch_sizes:
+    #     elapsed_times = []
+    #     for _ in range(5):  # Repeat the test 5 times for each batch size
+    #         elapsed_time = evaluate_annoy(num_users=batch_size)
+    #         elapsed_times.append(elapsed_time)
+    #     average_elapsed_time = sum(elapsed_times) / len(elapsed_times)
+    #     print("---" + "Batch size: " + str(batch_size) + "---" + str(average_elapsed_time))
+    #     average_times_annoy.append(average_elapsed_time)
+    # plt.plot(batch_sizes, average_times_annoy, marker='s', label='Annoy')
 
     # Run the tests for Milvus
     average_times_milvus = []
