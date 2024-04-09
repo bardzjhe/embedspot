@@ -81,11 +81,15 @@ def evaluate_linear(num_users = 100, raw_id_maps="./data/ml-1m/saved/raw_id_maps
 
 # annoy
 def evaluate_annoy(num_users = 100, user_col='user_id', item_col='movie_id',
-                     raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=[10, 50]):
+                     raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=10):
     start_time = time.time()  # Start timing
     annoy = Annoy(n_trees=10)
     annoy.fit(item_embedding)
+    end_time = time.time()  # End timing
+    time_elapsed = end_time - start_time
 
+    print("Annoy Index time elapsed: {:.2f} seconds".format(time_elapsed))
+    start_time = time.time()  # Start timin
     #for each user of test dataset, get ann search topk result
     user_map, item_map = np.load(raw_id_maps, allow_pickle=True)
     match_res = collections.defaultdict(dict)  # user id -> predicted item ids
@@ -107,17 +111,21 @@ def evaluate_annoy(num_users = 100, user_col='user_id', item_col='movie_id',
     # out = topk_metrics(y_true=ground_truth, y_pred=match_res, topKs=topk)
     end_time = time.time()  # End timing
     time_elapsed = end_time - start_time
-    print("Annoy time elapsed: {:.2f} seconds".format(time_elapsed))
+    print("Annoy retrieval time elapsed: {:.2f} seconds".format(time_elapsed))
     return time_elapsed
 
 
 # milvus
-def evaluate_milvus(num_users, raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=[10, 50]):
+def evaluate_milvus(num_users, raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=10):
     print("evaluate embedding matching on test data")
     start_time = time.time()  # Start timing
     milvus = Milvus(dim=64)
     milvus.fit(item_embedding)
+    end_time = time.time()  # End timing
+    time_elapsed = end_time - start_time
+    print("Index time elapsed: {:.2f} seconds".format(time_elapsed))
 
+    start_time = time.time()  # Start timing
     # for each user of test dataset, get ann search topk result
     # print("matching for topk")
     user_map, item_map = np.load(raw_id_maps, allow_pickle=True)
@@ -137,12 +145,12 @@ def evaluate_milvus(num_users, raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy",
 
     end_time = time.time()  # End timing
     time_elapsed = end_time - start_time
-    print("Milvus time elapsed: {:.2f} seconds".format(time_elapsed))
+    print("Milvus retrieval time elapsed: {:.2f} seconds".format(time_elapsed))
     return time_elapsed
 
 
 if __name__ == '__main__':
-    batch_sizes = [100, 1000, 2000]
+    batch_sizes = [100, 500, 1000]
     plt.figure(figsize=(10, 5))  # Optional: Define a larger figure size
 
     # Run the tests for linear scan
@@ -179,7 +187,7 @@ if __name__ == '__main__':
         print("---")
         average_elapsed_time = sum(elapsed_times) / len(elapsed_times)
         average_times_milvus.append(average_elapsed_time)
-    plt.plot(batch_sizes, average_times_milvus, marker='p', label='Annoy')
+    plt.plot(batch_sizes, average_times_milvus, marker='p', label='Milvus')
 
     # Adding labels and title
     plt.xlabel('Number of Users')
