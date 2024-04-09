@@ -214,7 +214,7 @@ class Milvus(object):
         index = {
             "index_type": "IVF_PQ",
             "metric_type": "L2",
-            "params": {"nlist": 128},
+            "params": {"nlist": 128, "m":32},
         }
         self.milvus.create_index("embeddings", index)
 
