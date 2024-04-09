@@ -135,6 +135,7 @@ def topk_metrics(y_true, y_pred, topKs=None):
 	hit_result = []
 	precision_result = []
 	recall_result = []
+	item_coverage_result = []
 	for idx in range(len(topKs)):
 		ndcgs = 0
 		mrrs = 0
@@ -142,6 +143,7 @@ def topk_metrics(y_true, y_pred, topKs=None):
 		precisions = 0
 		recalls = 0
 		gts = 0
+		unique_items_in_top_k = set()
 		for i in range(len(true_array)):
 			if len(true_array[i]) != 0:
 				mrr_tmp = 0
@@ -150,6 +152,7 @@ def topk_metrics(y_true, y_pred, topKs=None):
 				dcg_tmp = 0
 				idcg_tmp = 0
 				for j in range(topKs[idx]):
+					# print(j)
 					if pred_array[i][j] in true_array[i]:
 						hit_tmp += 1.
 						if mrr_flag:
@@ -158,6 +161,7 @@ def topk_metrics(y_true, y_pred, topKs=None):
 						dcg_tmp += 1. / (np.log2(j + 2))
 					if j < len(true_array[i]):
 						idcg_tmp += 1. / (np.log2(j + 2))
+					unique_items_in_top_k.add(pred_array[i][j])
 				gts += len(true_array[i])
 				hits += hit_tmp
 				mrrs += mrr_tmp
@@ -170,6 +174,7 @@ def topk_metrics(y_true, y_pred, topKs=None):
 		recall_result.append(round(recalls / len(pred_array), 4))
 		precision_result.append(round(precisions / len(pred_array), 4))
 		ndcg_result.append(round(ndcgs / len(pred_array), 4))
+		item_coverage_result.append(round(hits / 1000, 4))
 
 	results = defaultdict(list)
 	for idx in range(len(topKs)):
@@ -177,17 +182,20 @@ def topk_metrics(y_true, y_pred, topKs=None):
 		output = f'NDCG@{topKs[idx]}: {ndcg_result[idx]}'
 		results['NDCG'].append(output)
 
-		output = f'MRR@{topKs[idx]}: {mrr_result[idx]}'
-		results['MRR'].append(output)
+		# output = f'MRR@{topKs[idx]}: {mrr_result[idx]}'
+		# results['MRR'].append(output)
 
 		output = f'Recall@{topKs[idx]}: {recall_result[idx]}'
 		results['Recall'].append(output)
 
-		output = f'Hit@{topKs[idx]}: {hit_result[idx]}'
-		results['Hit'].append(output)
+		# output = f'Hit@{topKs[idx]}: {hit_result[idx]}'
+		# results['Hit'].append(output)
 
 		output = f'Precision@{topKs[idx]}: {precision_result[idx]}'
 		results['Precision'].append(output)
+
+		output = f'Coverage@{topKs[idx]}: {item_coverage_result[idx]}'
+		results['Item_Coverage'].append(output)
 	return results
 
 def log_loss(y_true, y_pred):

@@ -119,27 +119,14 @@ def generate_seq_feature_match(data,
                 for attr_col in item_attribute_cols:  #the history of item attribute features
                     sample.append(hist[attr_col].tolist()[:i])
             if i != len(pos_list) - 1:
-                if mode == 0:  #point-wise, the last col is label_col, include label 0 and 1
-                    last_col = "label"
-                    train_set.append(sample + [1])
-                    for _ in range(neg_ratio):
-                        sample[1] = neg_list[neg_idx]
-                        neg_idx += 1
-                        train_set.append(sample + [0])
-                elif mode == 1:  #pair-wise, the last col is neg_col, include one negative item
-                    last_col = "neg_items"
-                    for _ in range(neg_ratio):
-                        sample_copy = copy.deepcopy(sample)
-                        sample_copy.append(neg_list[neg_idx])
-                        neg_idx += 1
-                        train_set.append(sample_copy)
-                elif mode == 2:  #list-wise, the last col is neg_col, include neg_ratio negative items
-                    last_col = "neg_items"
-                    sample.append(neg_list[neg_idx: neg_idx + neg_ratio])
-                    neg_idx += neg_ratio
-                    train_set.append(sample)
-                else:
-                    raise ValueError("mode should in (0,1,2)")
+                #point-wise, the last col is label_col, include label 0 and 1
+                last_col = "label"
+                train_set.append(sample + [1])
+                for _ in range(neg_ratio):
+                    sample[1] = neg_list[neg_idx]
+                    neg_idx += 1
+                    train_set.append(sample + [0])
+
             else:
                 test_set.append(sample + [1])  #Note: if mode=1 or 2, the label col is useless.
 
@@ -167,7 +154,7 @@ class Annoy(object):
         search_k (int): search_k
     """
 
-    def __init__(self, metric='angular', n_trees=10, search_k=-1):
+    def __init__(self, metric='euclidean', n_trees=10, search_k=-1):
         self._n_trees = n_trees
         self._search_k = search_k
         self._metric = metric

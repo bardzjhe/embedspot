@@ -3,6 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# large files
+.idea
+examples/matching/data/ml-1m/ml-1m.csv
+*.pkl
+*.dat
+*.npy
+
+
 #Mac OS
 **/.DS_Store
 

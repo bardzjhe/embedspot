@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommender System Frontend</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>EmbedSpot Recommender System (based on MovieLens-1M dataset)</h1>
+    <form id="user-features-form">
+        <!-- Gender -->
+        <label for="gender">Gender:</label>
+        <select id="gender">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+        </select>
+
+        <!-- Age -->
+        <label for="age">Age:</label>
+        <input type="number" id="age" placeholder="Age" required>
+
+        <!-- Occupation -->
+        <label for="occupation">Occupation:</label>
+        <select id="occupation">
+            <!-- Populate this with the actual list of occupations from the dataset -->
+            <option value="0">other or not specified</option>
+            <option value="1">academic/educator</option>
+            <option value="2">artist</option>
+            <option value="3">clerical/admin</option>
+            <option value="4">college/grad student</option>
+            <option value="5">customer service</option>
+            <option value="6">doctor/health care</option>
+            <option value="7">executive/managerial</option>
+            <option value="8">farmer</option>
+            <option value="9">homemaker</option>
+            <option value="10">K-12 student</option>
+            <option value="11">lawyer</option>
+            <option value="12">programmer</option>
+            <option value="13">retired</option>
+            <option value="14">sales/marketing</option>
+            <option value="15">scientist</option>
+            <option value="16">self-employed</option>
+            <option value="17">technician/engineer</option>
+            <option value="18">tradesman/craftsman</option>
+            <option value="19">unemployed</option>
+            <option value="20">writer</option>
+
+            <!-- Add more occupation options here -->
+        </select>
+
+        <!-- ZIP Code -->
+        <label for="zip-code">ZIP Code:</label>
+            <select id="zip-code" name="zip-code" required>
+                <option value="">Select a ZIP Code</option>
+                <option value="12345">12345</option>
+                <option value="23456">23456</option>
+                <option value="34567">34567</option>
+                <!-- Add more ZIP code options here -->
+            </select>
+
+        <!-- Number of Recommendations -->
+        <label for="k-value">Number of Recommendations (k):</label>
+        <input type="number" id="k-value" placeholder="Number of Recommendations (k)" required>
+
+        <!-- Submit Button -->
+        <button type="submit">Get Recommendations</button>
+    </form>
+
+    <div id="recommendation-results">
+        <!-- The recommendations will be displayed here -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
