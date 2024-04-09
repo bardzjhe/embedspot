@@ -18,6 +18,9 @@ from torch_rechub.utils.data import MatchDataGenerator, df_to_dict
 
 # Configurations
 class Config:
+    user_train = "data/train_user.pkl"
+    user_test = "data/test_user.pkl"
+    all_item = "data/all_item.pkl"
     file_path = "examples/matching/data/ml-1m/ml-1m.csv"
     save_dir = 'examples/examples/ranking/data/ml-1m/saved/'
     model_save_path = "trained_models/embedspot/embedspot_weights.pth"
@@ -143,6 +146,7 @@ def match_evaluation_annoy(user_embedding, item_embedding, test_user, all_item, 
     return out
 
 
+# milvus vector database
 def match_evaluation_milvus(user_embedding, item_embedding, test_user, all_item, user_col='user_id', item_col='movie_id',
                      raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=[10, 50]):
     print("evaluate embedding matching on test data")
@@ -187,10 +191,8 @@ def main():
     # Load the data
     data = load_data(cfg.file_path)
 
-
     # Encode features
     data, feature_max_idx, user_map, item_map = encode_features(data, cfg.sparse_features, cfg.user_col, cfg.item_col)
-
 
 
     # test code
@@ -237,6 +239,14 @@ def main():
     y_test = x_test["label"]
     print({k: v[:3] for k, v in x_train.items()})
 
+    with open(cfg.user_train, "wb") as f:
+        pickle.dump(x_train, f)
+
+    with open(cfg.user_test, "wb") as f:
+        pickle.dump(x_test, f)
+
+
+
     print(cfg.user_cols)
 
     user_features = [
@@ -280,9 +290,17 @@ def main():
     # print(neg_item_features)
 
     all_item = df_to_dict(item_profile)
+    with open(cfg.all_item, "wb") as f:
+        pickle.dump(all_item, f)
+
+    assert 1==0
     print(all_item)
 
     test_user = x_test
+
+    print(type(x_train))
+    assert 1==0
+    print(type(test_user))
     print({k: v[:3] for k, v in all_item.items()})
     print({k: v[0] for k, v in test_user.items()})
 
@@ -331,6 +349,7 @@ def main():
     with open(cfg.user_embedding_path, "wb") as f:
         pickle.dump(user_embedding, f)
 
+    # Efficiency experiments
     # annoy
     result = match_evaluation_annoy(user_embedding, item_embedding, test_user, all_item, topk=[200],
                      raw_id_maps=cfg.save_dir + "raw_id_maps.npy")

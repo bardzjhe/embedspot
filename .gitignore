@@ -6,7 +6,6 @@ __pycache__/
 # large files
 .idea
 examples/matching/data/ml-1m/ml-1m.csv
-*.pkl
 *.npy
 
 
