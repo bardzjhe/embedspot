@@ -212,7 +212,7 @@ class Milvus(object):
         )  # check the num_entites
 
         index = {
-            "index_type": "IVF_FLAT",
+            "index_type": "IVF_PQ",
             "metric_type": "L2",
             "params": {"nlist": 128},
         }
