@@ -1,3 +1,4 @@
+import torch
 import pickle
 import time
 import numpy as np
@@ -45,7 +46,7 @@ def evaluate_linear(num_users = 100, raw_id_maps="./data/ml-1m/saved/raw_id_maps
     # print("user shape", user_embedding.detach().cpu().numpy().shape)
 
     user_emb_np = user_embedding.detach().cpu().numpy()[0,:]  # Call .detach() if it requires grad
-    print("user_emb_np.shape", user_emb_np.shape)
+    # print("user_emb_np.shape", user_emb_np.shape)
     # Assuming `item_embedding` is the PyTorch tensor you've shown,
     # convert the item_embedding tensor to a numpy array
     item_embedding_np = item_embedding.detach().cpu().numpy()
@@ -82,12 +83,10 @@ def evaluate_linear(num_users = 100, raw_id_maps="./data/ml-1m/saved/raw_id_maps
 def evaluate_annoy(num_users = 100, user_col='user_id', item_col='movie_id',
                      raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=[10, 50]):
     start_time = time.time()  # Start timing
-    print("evaluate embedding matching on test data")
     annoy = Annoy(n_trees=10)
     annoy.fit(item_embedding)
 
     #for each user of test dataset, get ann search topk result
-    print("matching for topk")
     user_map, item_map = np.load(raw_id_maps, allow_pickle=True)
     match_res = collections.defaultdict(dict)  # user id -> predicted item ids
     for i in topk:
@@ -96,7 +95,7 @@ def evaluate_annoy(num_users = 100, user_col='user_id', item_col='movie_id',
             match_res[user_map[user_id]] = np.vectorize(item_map.get)(all_item[item_col][items_idx])
 
     #get ground truth
-    print("generate ground truth")
+    # print("generate ground truth")
 
     data = pd.DataFrame({user_col: test_user[user_col], item_col: test_user[item_col]})
     data[user_col] = data[user_col].map(user_map)
@@ -104,7 +103,7 @@ def evaluate_annoy(num_users = 100, user_col='user_id', item_col='movie_id',
     user_pos_item = data.groupby(user_col).agg(list).reset_index()
     ground_truth = dict(zip(user_pos_item[user_col], user_pos_item[item_col]))  # user id -> ground truth
 
-    print("compute topk metrics")
+    # print("compute topk metrics")
     # out = topk_metrics(y_true=ground_truth, y_pred=match_res, topKs=topk)
     end_time = time.time()  # End timing
     time_elapsed = end_time - start_time
@@ -120,7 +119,7 @@ def evaluate_milvus(num_users, raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy",
     milvus.fit(item_embedding)
 
     # for each user of test dataset, get ann search topk result
-    print("matching for topk")
+    # print("matching for topk")
     user_map, item_map = np.load(raw_id_maps, allow_pickle=True)
     match_res = collections.defaultdict(dict)  # user id -> predicted item ids
     for user_id, user_emb in zip(test_user[user_col][:num_users], user_embedding):
@@ -128,7 +127,7 @@ def evaluate_milvus(num_users, raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy",
         match_res[user_map[user_id]] = np.vectorize(item_map.get)(all_item[item_col][items_idx])
 
     # get ground truth
-    print("generate ground truth")
+    # print("generate ground truth")
 
     data = pd.DataFrame({user_col: test_user[user_col], item_col: test_user[item_col]})
     data[user_col] = data[user_col].map(user_map)
@@ -153,6 +152,7 @@ if __name__ == '__main__':
         for _ in range(5):  # Repeat the test 5 times for each batch size
             elapsed_time = evaluate_linear(num_users=batch_size)
             elapsed_times.append(elapsed_time)
+        print("---")
         average_elapsed_time = sum(elapsed_times) / len(elapsed_times)
         average_times_linear.append(average_elapsed_time)
     plt.plot(batch_sizes, average_times_linear, marker='o', label='Linear Scan')
@@ -164,6 +164,7 @@ if __name__ == '__main__':
         for _ in range(5):  # Repeat the test 5 times for each batch size
             elapsed_time = evaluate_annoy(num_users=batch_size)
             elapsed_times.append(elapsed_time)
+        print("---")
         average_elapsed_time = sum(elapsed_times) / len(elapsed_times)
         average_times_annoy.append(average_elapsed_time)
     plt.plot(batch_sizes, average_times_annoy, marker='s', label='Annoy')
@@ -175,6 +176,7 @@ if __name__ == '__main__':
         for _ in range(5):  # Repeat the test 5 times for each batch size
             elapsed_time = evaluate_milvus(num_users=batch_size)
             elapsed_times.append(elapsed_time)
+        print("---")
         average_elapsed_time = sum(elapsed_times) / len(elapsed_times)
         average_times_milvus.append(average_elapsed_time)
     plt.plot(batch_sizes, average_times_milvus, marker='p', label='Annoy')
