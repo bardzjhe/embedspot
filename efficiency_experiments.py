@@ -14,9 +14,6 @@ with open('temp_user/user_embedding.pkl', 'rb') as f:
 with open('item_embeddings/item_embedding_10April_12_20.pkl', 'rb') as f:
     item_embedding = pickle.load(f)
 
-with open("data/train_user.pkl", 'rb') as f:
-    train_user = pickle.load(f)
-
 with open("data/test_user.pkl", 'rb') as f:
     test_user = pickle.load(f)
 

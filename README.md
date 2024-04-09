@@ -5,11 +5,10 @@ EmbedSpot is an embedding-based retrievel model intended for personalized recomm
 ## Prerequisites
 
 
-Anaconda
+1. Anaconda
 
-Docker
-
-[Microsoft Visual C++](https://learn.microsoft.com/en-us/cpp/linux/download-install-and-setup-the-linux-development-workload?view=msvc-170)
+2. Docker
+3. GCC Compiler
 
 ## 1. Offline
 ### 1.1 Conda environment
