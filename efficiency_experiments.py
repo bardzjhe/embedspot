@@ -115,7 +115,7 @@ def evaluate_annoy(num_users = 100, user_col='user_id', item_col='movie_id',
 # milvus
 def evaluate_milvus(num_users, raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy", topk=[10, 50]):
     print("evaluate embedding matching on test data")
-
+    start_time = time.time()  # Start timing
     milvus = Milvus(dim=64)
     milvus.fit(item_embedding)
 
@@ -136,7 +136,10 @@ def evaluate_milvus(num_users, raw_id_maps="./data/ml-1m/saved/raw_id_maps.npy",
     user_pos_item = data.groupby(user_col).agg(list).reset_index()
     ground_truth = dict(zip(user_pos_item[user_col], user_pos_item[item_col]))  # user id -> ground truth
 
-    print("compute topk metrics")
+    end_time = time.time()  # End timing
+    time_elapsed = end_time - start_time
+    print("Milvus time elapsed: {:.2f} seconds".format(time_elapsed))
+    return time_elapsed
 
 
 if __name__ == '__main__':
